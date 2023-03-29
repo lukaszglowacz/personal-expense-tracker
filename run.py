@@ -19,9 +19,41 @@ expenses = SHEET.worksheet('expenses')
 
 
 def add_expense():
+    # Define expense categories
+    categories = [
+        'Housing',
+        'Transportation',
+        'Food',
+        'Utilities',
+        'Clothing',
+        'Healthcare',
+        'Insurance',
+        'Supplies',
+        'Personal',
+        'Debt',
+        'Retirement',
+        'Education',
+        'Savings',
+        'Gifts',
+        'Entertainment'
+    ]
+
+    # Display category options to the user
+    print('Select a expense category: ')
+    for i, category in enumerate(categories):
+        print(f"{i+1}. {category}")
+
+    # Prompt user for category index
+    index = int(input('Enter the index of the expense category: ')) -1
+
+    # Check if index is valid
+    if index < 0 or index >= len(categories):
+        print('Invalid index')
+        return
+
     # Get expense details
     amount = input('Enter expense amount: ')
-    category = input('Enter expense category (bills, food, pleasures: ')
+    category = categories[index]
     date = input('Enter expense date (YYYY-MM-DD): ')
 
     # Check if date is valid
@@ -35,6 +67,8 @@ def add_expense():
     row = [int(amount), category, date]
     expenses.append_row(row)
     print('Expense added succesfully')
+
+add_expense()
 
 
 def view_expenses():
