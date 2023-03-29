@@ -68,7 +68,6 @@ def add_expense():
     expenses.append_row(row)
     print('Expense added succesfully')
 
-add_expense()
 
 
 def view_expenses():
@@ -117,3 +116,59 @@ def  edit_expense():
     expenses.update_cell(index + 2, 2, category)
     expenses.update_cell(index + 2, 3, date)
     print('Expense updated succesfully')
+
+
+def detail_expense():
+    # Read expenses from Google Sheets document
+    all_rows = expenses.get_all_values()[1:]
+
+    # Print expense details for the current month
+    current_month = datetime.today().month
+    total_expenses = 0
+    for row in all_rows:
+        expense_date = datetime.strptime(row[2], '%Y-%m-%d')
+        if expense_date.month == current_month:
+            total_expenses += int(row[0])
+    print(f"Total expenses for the current month: ${total_expenses}")
+
+    # Define expense categories
+    categories = [
+        'Housing',
+        'Transportation',
+        'Food',
+        'Utilities',
+        'Clothing',
+        'Healthcare',
+        'Insurance',
+        'Supplies',
+        'Personal',
+        'Debt',
+        'Retirement',
+        'Education',
+        'Savings',
+        'Gifts',
+        'Entertainment'
+    ]
+
+    # Display category options to the user
+    print('\nSelect a category to view detailed expenses:')
+    for i, category in enumerate(categories):
+        print(f"{i+1}. {category}")
+
+    #Prompt user for category index
+    index = int(input('Enter the index of the expense category: ')) -1
+
+    # Check if index is valid
+    if index < 0 or index >= len(categories):
+        print('Invalid index')
+        return
+
+    # Calculate and print total expenses for selected category
+    category = categories[index]
+    category_total = 0
+    for row in all_rows:
+        if row[1] == category:
+            category_total += int(row[0])
+            print(f"\nTotal expenses for {category}: ${category_total}")
+
+detail_expense()
