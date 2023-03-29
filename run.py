@@ -1,6 +1,10 @@
 from datetime import datetime
 import gspread
 from google.oauth2.service_account import Credentials
+import pyfiglet
+
+ascii_banner = pyfiglet.figlet_format("Personal Expense Tracker")
+print(ascii_banner)
 
 # Define the credentials
 SCOPE = [
@@ -68,7 +72,7 @@ def add_expense():
     expenses.append_row(row)
     print('Expense added succesfully')
 
-
+add_expense()
 
 def view_expenses():
     # Read current month expenses from Google Sheets document
@@ -80,6 +84,7 @@ def view_expenses():
         if expense_date.month == current_month:
             print(f"{row[2]:<12}${row[0]:<10}{row[1]:<15}")
 
+view_expenses()
 
 def  edit_expense():
     # Read expense from Google Sheets document
@@ -117,6 +122,7 @@ def  edit_expense():
     expenses.update_cell(index + 2, 3, date)
     print('Expense updated succesfully')
 
+edit_expense()
 
 def detail_expense():
     # Read expenses from Google Sheets document
@@ -170,5 +176,6 @@ def detail_expense():
         if row[1] == category:
             category_total += int(row[0])
             print(f"\nTotal expenses for {category}: ${category_total}")
+
 
 detail_expense()
