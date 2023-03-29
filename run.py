@@ -35,3 +35,20 @@ def add_expense():
     row = [int(amount), category, date]
     expenses.append_row(row)
     print('Expense added succesfully')
+
+
+add_expense()
+
+
+def view_expenses():
+    # Read current month expenses from Google Sheets document
+    # Check if expense is for current month
+    current_month = datetime.today().month
+    print(f'{"Date":<12}{"Amount":<10}{"Category":<15}')
+    for row in expenses.get_all_values()[1:]:
+        expense_date = datetime.strptime(row[2], '%Y-%m-%d')
+        if expense_date.month == current_month:
+            print(f"{row[2]:<12}${row[0]:<10}{row[1]:<15}")
+
+
+view_expenses()
