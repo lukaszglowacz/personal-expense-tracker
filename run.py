@@ -39,41 +39,6 @@ CATEGORIES = [
     'Entertainment'
 ]
 
-def  edit_expense():
-    # Prompt user for year and month
-    current_year = datetime.today().year
-    while True:
-        try:
-            year = int(input(f'\nEnter year (1900 - {current_year}): '))
-            if year < 1900 or year > current_year:
-                raise ValueError()
-            break
-        except ValueError:
-            print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
-    
-    max_month = 12 if year < current_year else datetime.today().month
-    while True:
-        try:
-            month = int(input(f'\nEnter month: (1 - {max_month}) '))
-            if month < 1 or month > max_month:
-                raise ValueError()
-            break
-        except ValueError:
-            print(f'Invalid month. Please enter a number between 1 and {max_month}. ')
-
-    # Fetch expenses and filter out only those that match user's criteria
-    chosen_date = datetime(year, month, 1)
-    expenses_list = EXPENSES.get_all_records()
-    filtered_expenses = [expense for expense in expenses_list if datetime.strptime(expense['Date'], '%Y-%m-%d').date().replace(day=1) == chosen_date.date()]
-
-    # Print out the filtered expenses
-    print(f'\nFiltered expenses for {chosen_date.strftime("%B %Y")}:\n')
-    for expense in filtered_expenses:
-        print(f'{expense["Date"]}: {expense["Category"]} - {expense["Amount"]}')
-
-edit_expense()
-
-
 def add_expense():
     # Display category options to the user
     print('')
@@ -131,6 +96,53 @@ def add_expense():
     row = [int(amount), CATEGORIES[category_index], str(date)]
     EXPENSES.append_row(row)
     print('\nExpense added successfully\n')
+
+
+def edit_expense():
+    # Prompt user for year and month
+    current_year = datetime.today().year
+    while True:
+        try:
+            year = int(input(f'\nEnter year (1900 - {current_year}): '))
+            if year < 1900 or year > current_year:
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
+    
+    while True:
+        max_month = 12 if year < current_year else datetime.today().month
+        try:
+            month = int(input(f'\nEnter month: (1 - {max_month}) '))
+            if month < 1 or month > max_month:
+                raise ValueError()
+            # Check if there is any expense for the selected month
+            chosen_date = datetime(year, month, 1)
+            filtered_expenses = [expense for expense in EXPENSES.get_all_records() if datetime.strptime(expense['Date'], '%Y-%m-%d').date().replace(day=1) == chosen_date.date()]
+            if len(filtered_expenses) == 0:
+                print(f'There are no expenses for {chosen_date.strftime("%B %Y")}. Please select another year and month.')
+                # Prompt user for another year
+                while True:
+                    try:
+                        year = int(input(f'\nEnter year (1900 - {current_year}): '))
+                        if year < 1900 or year > current_year:
+                            raise ValueError()
+                        break
+                    except ValueError:
+                        print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
+                # Update max_month based on new year
+                max_month = 12 if year < current_year else datetime.today().month
+                continue
+            # Display expenses in a table format
+            print(f'{"Index":<10}{"Amount":<10}{"Category":<20}{"Date":<10}')
+            for i, expense in enumerate(filtered_expenses):
+                print(f'{i+1:<10}{expense["Amount"]:<10}{expense["Category"]:<20}{expense["Date"]:<10}')
+            break
+        except ValueError:
+            print(f'Invalid month. Please enter a number between 1 and {max_month}. ')
+            continue
+   
+edit_expense()
 
 
 def year_statement():
