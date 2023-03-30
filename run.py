@@ -39,7 +39,6 @@ CATEGORIES = [
     'Entertainment'
 ]
 
-
 def add_expense():
     # Display category options to the user
     print('')
@@ -97,9 +96,6 @@ def add_expense():
     row = [int(amount), category, str(date)]
     EXPENSES.append_row(row)
     print('\nExpense added successfully\n')
-
-add_expense()
-
 
 
 
@@ -186,57 +182,30 @@ def  edit_expense():
 
 
 def detail_expense():
-    # Read expenses from Google Sheets document
-    all_rows = EXPENSES.get_all_values()[1:]
+    # Prompt user for year and month
+    current_year = datetime.today().year
+    while True:
+        try:
+            year = int(input('\nEnter year: '))
+            if year < 1900 or year > current_year:
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
+    
+    max_month = 12 if year < current_year else datetime.today().month
+    while True:
+        try:
+            month = int(input(f'\nEnter month (1 - {max_month}) '))
+            if month < 1 or month > max_month:
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid month. Please enter a number between 1 and {max_month}. ')
 
-    # Print expense details for the current month
-    current_month = datetime.today().month
-    total_expenses = 0
-    for row in all_rows:
-        expense_date = datetime.strptime(row[2], '%Y-%m-%d')
-        if expense_date.month == current_month:
-            total_expenses += int(row[0])
-    print(f"Total expenses for the current month: ${total_expenses}")
+            
 
-    # Define expense categories
-    categories = [
-        'Housing',
-        'Transportation',
-        'Food',
-        'Utilities',
-        'Clothing',
-        'Healthcare',
-        'Insurance',
-        'Supplies',
-        'Personal',
-        'Debt',
-        'Retirement',
-        'Education',
-        'Savings',
-        'Gifts',
-        'Entertainment'
-    ]
-
-    # Display category options to the user
-    print('\nSelect a category to view detailed expenses:')
-    for i, category in enumerate(categories):
-        print(f"{i+1}. {category}")
-
-    #Prompt user for category index
-    index = int(input('Enter the index of the expense category: ')) -1
-
-    # Check if index is valid
-    if index < 0 or index >= len(categories):
-        print('Invalid index')
-        return
-
-    # Calculate and print total expenses for selected category
-    category = categories[index]
-    category_total = 0
-    for row in all_rows:
-        if row[1] == category:
-            category_total += int(row[0])
-            print(f"\nTotal expenses for {category}: ${category_total}")
+detail_expense()
 
 
 def view_expenses():
