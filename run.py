@@ -100,6 +100,9 @@ def add_expense():
 
 
 
+
+
+
 def  edit_expense():
     # Read expense from Google Sheets document
     all_rows = EXPENSES.get_all_values()[-10:][1:]
@@ -122,14 +125,14 @@ def  edit_expense():
 
     
     # Display category options to the user
-    print('\n\nSelect a new expense category: \n')
+    print('')
+    print(f'{"Index":<6}{"Category":<15}')
     for i, category in enumerate(CATEGORIES):
-        print(f"{i+1}. {category}")
+        print(f"{i+1:<6}{category:<15}")
 
     # Prompt user for category index
-    
     while True:
-        category_index_input = input('\nEnter the index of the new expense category: ')
+        category_index_input = input(f"\nEnter the index of the new expense category (1 - {len(CATEGORIES)}): ")
         if not category_index_input:
             continue
         try:
@@ -142,27 +145,52 @@ def  edit_expense():
             print('Invalid index. Please enter a valid number.\n')
             continue
 
+    # Get expense details
+    # Get amount only with numbers and change it to integers
+    while True:  
+        amount_input = input('\nEnter new expense amount: ')
+        if not amount_input:
+            continue
+        try:
+            amount = round(float(amount_input))
+            if amount <= 0:
+                print('Invalid amount. Please enter a positive number.')
+                continue
+            break
+        except ValueError:
+            print('Invalid amount. Please enter a valid number.')
+            continue
+    
+        # Get expense date
+    while True:
+        date_input = input('\nEnter new expense date (YYYY-MM-DD): ')
+        if not date_input:
+            continue
+        try:
+            date = datetime.strptime(date_input, '%Y-%m-%d').date()
+            if date > date.today():
+                print('Invalid date. Please enter a date in the past or today')
+                continue
+            break
+        except ValueError:
+            print("Incorrect date format. Please enter a valid date in the format YYYY-MM-DD.")
+            continue
 
-    # Prompt user for new expense details
-    category = CATEGORIES[category_index]
-    amount = input('\nEnter new expense amount: ')
-    date = input('\nEnter new expense date (YYYY-MM-DD): ')
-
-    # Check if date is valid
-    try:
-        datetime.strptime(date, '%Y-%m-%d')
-    except ValueError:
-        print('Incorrect date format, should be YYYY-MM-DD')
-        return
 
     # Update row in Google Sheets document
-    row = [int(amount), category, date]
+    row = [int(amount), category, str(date)]
     EXPENSES.update_cell(index + 2, 1, amount)
     EXPENSES.update_cell(index + 2, 2, category)
-    EXPENSES.update_cell(index + 2, 3, date)
-    print('Expense updated succesfully')
+    EXPENSES.update_cell(index + 2, 3, str(date))
+    print('\nExpense updated succesfully\n')
 
 edit_expense()
+
+
+
+
+
+
 
 def detail_expense():
     # Read expenses from Google Sheets document
