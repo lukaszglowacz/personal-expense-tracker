@@ -42,19 +42,19 @@ CATEGORIES = [
 
 def add_expense():
     # Display category options to the user
-    print('Select a expense category: \n')
+    print('')
+    print(f'{"Index":<6}{"Category":<15}')
     for i, category in enumerate(CATEGORIES):
-        print(f"{i+1}. {category}")
-
-    # Prompt user for category index
+        print(f"{i+1:<6}{category:<15}")
     
+    # Prompt user for category index
     while True:
-        index_input = input('\nEnter the index of the expense category: ')
-        if not index_input:
+        category_index_input = input(f"\nEnter the index of the new expense category (1 - {len(CATEGORIES)}): ")
+        if not category_index_input:
             continue
         try:
-            index = int(index_input) - 1
-            if index < 0 or index >= len(CATEGORIES):
+            category_index = int(category_index_input) - 1
+            if category_index < 0 or category_index >= len(CATEGORIES):
                 print(f"Invalid index. Please enter a number between 1 and {len(CATEGORIES)}")
                 continue
             break
@@ -65,7 +65,7 @@ def add_expense():
     # Get expense details
     # Get amount only with numbers and change it to integers
     while True:  
-        amount_input = input('Enter expense amount: ')
+        amount_input = input('\nEnter expense amount: ')
         if not amount_input:
             continue
         try:
@@ -80,7 +80,7 @@ def add_expense():
 
     # Get expense date
     while True:
-        date_input = input('Enter expense date (YYYY-MM-DD): ')
+        date_input = input('\nEnter expense date (YYYY-MM-DD): ')
         if not date_input:
             continue
         try:
@@ -94,11 +94,11 @@ def add_expense():
             continue
 
     # Write expense to Google Sheets document
-    row = [amount, CATEGORIES[index], date.strftime('%Y-%m-%d')]
+    row = [int(amount), category, str(date)]
     EXPENSES.append_row(row)
-    print('Expense added successfully')
+    print('\nExpense added successfully\n')
 
-
+add_expense()
 
 
 
@@ -183,13 +183,6 @@ def  edit_expense():
     EXPENSES.update_cell(index + 2, 2, category)
     EXPENSES.update_cell(index + 2, 3, str(date))
     print('\nExpense updated succesfully\n')
-
-edit_expense()
-
-
-
-
-
 
 
 def detail_expense():
