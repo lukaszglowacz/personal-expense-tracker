@@ -3,7 +3,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import pyfiglet
 
-ascii_banner = pyfiglet.figlet_format("Personal\nqiotExpense\nTracker")
+ascii_banner = pyfiglet.figlet_format("Personal\nExpense\nTracker")
 print(ascii_banner)
 
 # Define the credentials
@@ -69,7 +69,7 @@ def add_expense():
         if not amount_input:
             continue
         try:
-            amount = int(amount_input)
+            amount = round(float(amount_input))
             if amount <= 0:
                 print('Invalid amount. Please enter a positive number.')
                 continue
