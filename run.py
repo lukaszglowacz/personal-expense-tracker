@@ -98,18 +98,6 @@ def add_expense():
     EXPENSES.append_row(row)
     print('Expense added successfully')
 
-add_expense()
-
-def view_expenses():
-    # Read current month expenses from Google Sheets document
-    # Check if expense is for current month
-    current_month = datetime.today().month
-    print(f'{"Date":<12}{"Amount":<10}{"Category":<15}')
-    for row in EXPENSES.get_all_values()[1:]:
-        expense_date = datetime.strptime(row[2], '%Y-%m-%d')
-        if expense_date.month == current_month:
-            print(f"{row[2]:<12}${row[0]:<10}{row[1]:<15}")
-
 
 
 def  edit_expense():
@@ -122,17 +110,43 @@ def  edit_expense():
         print(f"{i+1:<6}{row[2]:<12}${row[0]:<10}{row[1]:<15}")
 
     # Prompt user for index of the expense to edit
-    index = int(input('Enter the index of the expense to edit: ')) -1
+    valid_indexes = [str(i+1) for i in range(len(all_rows))]
+    last_valid_index = valid_indexes[-1]
+    index = None
+    while index is None:
+        index_input = input(f'\nEnter the index of the expense to edit (1 - {last_valid_index}): ')
+        if index_input not in valid_indexes:
+            print(f'Invalid index. Please enter a number between 1 and {len(all_rows)}. ')
+            continue
+        index = int(index_input) - 1
 
-    # Check if index is valid
-    if index < 0 or index >= len(all_rows):
-        print('Invalid index')
-        return
     
+    # Display category options to the user
+    print('\n\nSelect a new expense category: \n')
+    for i, category in enumerate(CATEGORIES):
+        print(f"{i+1}. {category}")
+
+    # Prompt user for category index
+    
+    while True:
+        category_index_input = input('\nEnter the index of the new expense category: ')
+        if not category_index_input:
+            continue
+        try:
+            category_index = int(category_index_input) - 1
+            if category_index < 0 or category_index >= len(CATEGORIES):
+                print(f"Invalid index. Please enter a number between 1 and {len(CATEGORIES)}")
+                continue
+            break
+        except ValueError:
+            print('Invalid index. Please enter a valid number.\n')
+            continue
+
+
     # Prompt user for new expense details
-    amount = input('Enter new expense amount: ')
-    category = input('Enter new expense category (bills, food, pleasures): ')
-    date = input('Enter new expense date (YYYY-MM-DD): ')
+    category = CATEGORIES[category_index]
+    amount = input('\nEnter new expense amount: ')
+    date = input('\nEnter new expense date (YYYY-MM-DD): ')
 
     # Check if date is valid
     try:
@@ -148,7 +162,7 @@ def  edit_expense():
     EXPENSES.update_cell(index + 2, 3, date)
     print('Expense updated succesfully')
 
-
+edit_expense()
 
 def detail_expense():
     # Read expenses from Google Sheets document
@@ -204,3 +218,12 @@ def detail_expense():
             print(f"\nTotal expenses for {category}: ${category_total}")
 
 
+def view_expenses():
+    # Read current month expenses from Google Sheets document
+    # Check if expense is for current month
+    current_month = datetime.today().month
+    print(f'{"Date":<12}{"Amount":<10}{"Category":<15}')
+    for row in EXPENSES.get_all_values()[1:]:
+        expense_date = datetime.strptime(row[2], '%Y-%m-%d')
+        if expense_date.month == current_month:
+            print(f"{row[2]:<12}${row[0]:<10}{row[1]:<15}")
