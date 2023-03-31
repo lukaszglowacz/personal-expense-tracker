@@ -161,6 +161,383 @@ def edit_expense():
     print(f'Amount: {selected_expense["Amount"]}')
     print(f'Date: {selected_expense["Date"]}')
 
+    # Prompt user to edit the expense details
+    while True:
+        try:
+            edit_choice = input('\nWould you like to edit the category, amount or date? (c / a / d) ')
+            if edit_choice.lower() not in ['c', 'a', 'd']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter c (category), a (amount) or d (date).')
+
+    if edit_choice.lower() == 'c':
+        # Display category options to the user
+        print('')
+        print(f'{"Index":<6}{"Category":<15}')
+        for i, category in enumerate(CATEGORIES):
+            print(f"{i+1:<6}{category:<15}")
+
+        # Prompt user for new category index
+        while True:
+            category_index_input = input(f"\nEnter the index of the new expense category (1 - {len(CATEGORIES)}): ")
+            if not category_index_input:
+                continue
+            try:
+                category_index = int(category_index_input) - 1
+                if category_index < 0 or category_index >= len(CATEGORIES):
+                    print(f"Invalid index. Please enter a number between 1 and {len(CATEGORIES)}")
+                    continue
+                break
+            except ValueError:
+                print('Invalid index. Please enter a valid number.')
+                continue
+        # Update the category for the selected expense
+        selected_expense["Category"] = CATEGORIES[category_index]
+        row_index = EXPENSES.find(selected_expense["Date"]).row
+        EXPENSES.update_cell(row_index, 2, selected_expense["Category"])
+        print('Category updated successfully')
+
+        # Ask if user wants to edit more parameters
+        while True:
+            more_choice = input('\nDo you want to edit more parameters for this expense? (y/n) ')
+            if more_choice.lower() == 'y':
+                # Prompt user to choose what to edit
+                while True:
+                    try:
+                        edit_choice = input('\nWould you like to edit the category, amount or date? (c / a / d) ')
+                        if edit_choice.lower() not in ['c', 'a', 'd']:
+                            raise ValueError()
+                        break
+                    except ValueError:
+                        print('Invalid choice. Please enter c (category), a (amount) or d (date).')
+                # Code for editing category, amount or date
+                # Display the selected expense details
+                print('\nSelected expense details:')
+                print(f'Category: {selected_expense["Category"]}')
+                print(f'Amount: {selected_expense["Amount"]}')
+                print(f'Date: {selected_expense["Date"]}')
+
+                if edit_choice.lower() == 'c':
+                    # Display category options to the user
+                    print('')
+                    print(f'{"Index":<6}{"Category":<15}')
+                    for i, category in enumerate(CATEGORIES):
+                        print(f"{i+1:<6}{category:<15}")
+
+                    # Prompt user for new category index
+                    while True:
+                        category_index_input = input(f"\nEnter the index of the new expense category (1 - {len(CATEGORIES)}): ")
+                        if not category_index_input:
+                            continue
+                        try:
+                            category_index = int(category_index_input) - 1
+                            if category_index < 0 or category_index >= len(CATEGORIES):
+                                print(f"Invalid index. Please enter a number between 1 and {len(CATEGORIES)}")
+                                continue
+                            break
+                        except ValueError:
+                            print('Invalid index. Please enter a valid number.')
+                            continue
+                    # Update the category for the selected expense
+                    selected_expense["Category"] = CATEGORIES[category_index]
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    EXPENSES.update_cell(row_index, 2, selected_expense["Category"])
+                    print('Category updated successfully')
+
+                elif edit_choice.lower() == 'a':
+                    # Get new amount
+                    while True:
+                        amount_input = input('\nEnter new expense amount: ')
+                        if not amount_input:
+                            continue
+                        try:
+                            amount = round(float(amount_input))
+                            if amount <= 0:
+                                print('Invalid amount. Please enter a positive number.')
+                                continue
+                            break
+                        except ValueError:
+                            print('Invalid amount. Please enter a valid number.')
+                            continue
+        
+                    # Update the amount for the selected expense
+                    selected_expense["Amount"] = amount
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    EXPENSES.update_cell(row_index, 1, selected_expense["Amount"])
+                    print('Amount updated successfully')
+
+                elif edit_choice.lower() == 'd':
+                    # Get new date
+                    while True:
+                        date_input = input('\nEnter new expense date (YYYY-MM-DD): ')
+                        if not date_input:
+                            continue
+                        try:
+                            date = datetime.strptime(date_input, '%Y-%m-%d').date()
+                            if date > date.today():
+                                print('Invalid date. Please enter a date in the past or today')
+                                continue
+                            break
+                        except ValueError:
+                            print("Incorrect date format. Please enter a valid date in the format YYYY-MM-DD.")
+                            continue
+
+                    # Update the date for the selected expense
+                    # Get the row index for the selected expense
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    # Update the date for the selected expense
+                    selected_expense["Date"] = str(date)
+                    EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
+                    print('Date updated successfully')   
+
+            elif more_choice.lower() == 'n':
+                break
+            else:
+                print('Invalid choice. Please enter y (yes) or n (no).')
+
+    elif edit_choice.lower() == 'a':
+        # Get new amount
+        while True:
+            amount_input = input('\nEnter new expense amount: ')
+            if not amount_input:
+                continue
+            try:
+                amount = round(float(amount_input))
+                if amount <= 0:
+                    print('Invalid amount. Please enter a positive number.')
+                    continue
+                break
+            except ValueError:
+                print('Invalid amount. Please enter a valid number.')
+                continue
+        
+        # Update the amount for the selected expense
+        selected_expense["Amount"] = amount
+        row_index = EXPENSES.find(selected_expense["Date"]).row
+        EXPENSES.update_cell(row_index, 1, selected_expense["Amount"])
+        print('Amount updated successfully')
+
+        # Ask if user wants to edit more parameters
+        while True:
+            more_choice = input('\nDo you want to edit more parameters for this expense? (y/n) ')
+            if more_choice.lower() == 'y':
+                # Prompt user to choose what to edit
+                while True:
+                    try:
+                        edit_choice = input('\nWould you like to edit the category, amount or date? (c / a / d) ')
+                        if edit_choice.lower() not in ['c', 'a', 'd']:
+                            raise ValueError()
+                        break
+                    except ValueError:
+                        print('Invalid choice. Please enter c (category), a (amount) or d (date).')
+                # Code for editing category, amount or date
+                # Display the selected expense details
+                print('\nSelected expense details:')
+                print(f'Category: {selected_expense["Category"]}')
+                print(f'Amount: {selected_expense["Amount"]}')
+                print(f'Date: {selected_expense["Date"]}')
+
+                if edit_choice.lower() == 'c':
+                    # Display category options to the user
+                    print('')
+                    print(f'{"Index":<6}{"Category":<15}')
+                    for i, category in enumerate(CATEGORIES):
+                        print(f"{i+1:<6}{category:<15}")
+
+                    # Prompt user for new category index
+                    while True:
+                        category_index_input = input(f"\nEnter the index of the new expense category (1 - {len(CATEGORIES)}): ")
+                        if not category_index_input:
+                            continue
+                        try:
+                            category_index = int(category_index_input) - 1
+                            if category_index < 0 or category_index >= len(CATEGORIES):
+                                print(f"Invalid index. Please enter a number between 1 and {len(CATEGORIES)}")
+                                continue
+                            break
+                        except ValueError:
+                            print('Invalid index. Please enter a valid number.')
+                            continue
+                    # Update the category for the selected expense
+                    selected_expense["Category"] = CATEGORIES[category_index]
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    EXPENSES.update_cell(row_index, 2, selected_expense["Category"])
+                    print('Category updated successfully')
+
+                elif edit_choice.lower() == 'a':
+                    # Get new amount
+                    while True:
+                        amount_input = input('\nEnter new expense amount: ')
+                        if not amount_input:
+                            continue
+                        try:
+                            amount = round(float(amount_input))
+                            if amount <= 0:
+                                print('Invalid amount. Please enter a positive number.')
+                                continue
+                            break
+                        except ValueError:
+                            print('Invalid amount. Please enter a valid number.')
+                            continue
+        
+                    # Update the amount for the selected expense
+                    selected_expense["Amount"] = amount
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    EXPENSES.update_cell(row_index, 1, selected_expense["Amount"])
+                    print('Amount updated successfully')
+
+                elif edit_choice.lower() == 'd':
+                    # Get new date
+                    while True:
+                        date_input = input('\nEnter new expense date (YYYY-MM-DD): ')
+                        if not date_input:
+                            continue
+                        try:
+                            date = datetime.strptime(date_input, '%Y-%m-%d').date()
+                            if date > date.today():
+                                print('Invalid date. Please enter a date in the past or today')
+                                continue
+                            break
+                        except ValueError:
+                            print("Incorrect date format. Please enter a valid date in the format YYYY-MM-DD.")
+                            continue
+
+                    # Update the date for the selected expense
+                    # Get the row index for the selected expense
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    # Update the date for the selected expense
+                    selected_expense["Date"] = str(date)
+                    EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
+                    print('Date updated successfully')   
+
+            elif more_choice.lower() == 'n':
+                break
+            else:
+                print('Invalid choice. Please enter y (yes) or n (no).')
+
+    elif edit_choice.lower() == 'd':
+        # Get new date
+        while True:
+            date_input = input('\nEnter new expense date (YYYY-MM-DD): ')
+            if not date_input:
+                continue
+            try:
+                date = datetime.strptime(date_input, '%Y-%m-%d').date()
+                if date > date.today():
+                    print('Invalid date. Please enter a date in the past or today')
+                    continue
+                break
+            except ValueError:
+                print("Incorrect date format. Please enter a valid date in the format YYYY-MM-DD.")
+                continue
+
+        # Update the date for the selected expense
+        # Get the row index for the selected expense
+        row_index = EXPENSES.find(selected_expense["Date"]).row
+        # Update the date for the selected expense
+        selected_expense["Date"] = str(date)
+        EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
+        print('Date updated successfully')
+        
+        # Ask if user wants to edit more parameters
+        while True:
+            more_choice = input('\nDo you want to edit more parameters for this expense? (y/n) ')
+            if more_choice.lower() == 'y':
+                # Prompt user to choose what to edit
+                while True:
+                    try:
+                        edit_choice = input('\nWould you like to edit the category, amount or date? (c / a / d) ')
+                        if edit_choice.lower() not in ['c', 'a', 'd']:
+                            raise ValueError()
+                        break
+                    except ValueError:
+                        print('Invalid choice. Please enter c (category), a (amount) or d (date).')
+                # Code for editing category, amount or date
+                # Display the selected expense details
+                print('\nSelected expense details:')
+                print(f'Category: {selected_expense["Category"]}')
+                print(f'Amount: {selected_expense["Amount"]}')
+                print(f'Date: {selected_expense["Date"]}')
+
+                if edit_choice.lower() == 'c':
+                    # Display category options to the user
+                    print('')
+                    print(f'{"Index":<6}{"Category":<15}')
+                    for i, category in enumerate(CATEGORIES):
+                        print(f"{i+1:<6}{category:<15}")
+
+                    # Prompt user for new category index
+                    while True:
+                        category_index_input = input(f"\nEnter the index of the new expense category (1 - {len(CATEGORIES)}): ")
+                        if not category_index_input:
+                            continue
+                        try:
+                            category_index = int(category_index_input) - 1
+                            if category_index < 0 or category_index >= len(CATEGORIES):
+                                print(f"Invalid index. Please enter a number between 1 and {len(CATEGORIES)}")
+                                continue
+                            break
+                        except ValueError:
+                            print('Invalid index. Please enter a valid number.')
+                            continue
+                    # Update the category for the selected expense
+                    selected_expense["Category"] = CATEGORIES[category_index]
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    EXPENSES.update_cell(row_index, 2, selected_expense["Category"])
+                    print('Category updated successfully')
+
+                elif edit_choice.lower() == 'a':
+                    # Get new amount
+                    while True:
+                        amount_input = input('\nEnter new expense amount: ')
+                        if not amount_input:
+                            continue
+                        try:
+                            amount = round(float(amount_input))
+                            if amount <= 0:
+                                print('Invalid amount. Please enter a positive number.')
+                                continue
+                            break
+                        except ValueError:
+                            print('Invalid amount. Please enter a valid number.')
+                            continue
+        
+                    # Update the amount for the selected expense
+                    selected_expense["Amount"] = amount
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    EXPENSES.update_cell(row_index, 1, selected_expense["Amount"])
+                    print('Amount updated successfully')
+
+                elif edit_choice.lower() == 'd':
+                    # Get new date
+                    while True:
+                        date_input = input('\nEnter new expense date (YYYY-MM-DD): ')
+                        if not date_input:
+                            continue
+                        try:
+                            date = datetime.strptime(date_input, '%Y-%m-%d').date()
+                            if date > date.today():
+                                print('Invalid date. Please enter a date in the past or today')
+                                continue
+                            break
+                        except ValueError:
+                            print("Incorrect date format. Please enter a valid date in the format YYYY-MM-DD.")
+                            continue
+
+                    # Update the date for the selected expense
+                    # Get the row index for the selected expense
+                    row_index = EXPENSES.find(selected_expense["Date"]).row
+                    # Update the date for the selected expense
+                    selected_expense["Date"] = str(date)
+                    EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
+                    print('Date updated successfully')   
+
+            elif more_choice.lower() == 'n':
+                break
+            else:
+                print('Invalid choice. Please enter y (yes) or n (no).')
+
 def year_statement():
     # Prompt user for year
     current_year = datetime.today().year
