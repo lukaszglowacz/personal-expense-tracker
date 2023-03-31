@@ -2,6 +2,8 @@ from datetime import datetime
 import gspread
 from google.oauth2.service_account import Credentials
 import pyfiglet
+import time
+import sys
 
 ascii_banner = pyfiglet.figlet_format("Personal\nExpense\nTracker")
 print(ascii_banner)
@@ -97,7 +99,7 @@ def add_expense():
     EXPENSES.append_row(row)
     print('\nExpense added successfully\n')
 
-
+    go_back_add_expense()
 
 def edit_expense():
     # Prompt user for year and month
@@ -538,6 +540,8 @@ def edit_expense():
             else:
                 print('Invalid choice. Please enter y (yes) or n (no).')
 
+    go_back_edit_expense()
+
 def year_statement():
     # Prompt user for year
     current_year = datetime.today().year
@@ -588,6 +592,8 @@ def year_statement():
         year_statement()
     else:
         return
+
+    go_back_exp_year()
 
 def month_statement():
     # Prompt user for year and month
@@ -647,6 +653,8 @@ def month_statement():
         month_statement()
     else:
         return
+
+    go_back_exp_year()
 
 def compare_year_expenses():
     # Prompt user for two years
@@ -714,11 +722,233 @@ def compare_year_expenses():
     else:
         return
 
+    go_back_compare_year()
+
+def compare_month_expenses():
+    # Prompt user for year and month for the first date
+    current_year = datetime.today().year
+    while True:
+        try:
+            year1 = int(input(f'\nEnter year for first date (1900 - {current_year}): '))
+            if year1 < 1900 or year1 > current_year:
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
+
+    while True:
+        max_month = 12 if year1 < current_year else datetime.today().month
+        try:
+            month1 = int(input(f'\nEnter month for first date (1 - {max_month}) '))
+            if month1 < 1 or month1 > max_month:
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid month. Please enter a number between 1 and {max_month}. ')
+
+    # Show user picked first date
+    print(f'\nFirst date to compare: {year1}/{month1}')
+
+    # Prompt user for year and month for the second date
+    while True:
+        try:
+            year2 = int(input(f'\nEnter year for second date (1900 - {current_year}): '))
+            if year2 < 1900 or year2 > current_year:
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid year. Please enter a different number between 1900 and {current_year}, excluding {year1}')
+
+    while True:
+        max_month = 12 if year2 < current_year else datetime.today().month
+        try:
+            month2 = int(input(f'\nEnter month for second date (1 - {max_month}) '))
+            if month2 < 1 or month2 > max_month:
+                raise ValueError()
+            if year2 == year1 and month2 == month1:
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid month. Please enter a number between 1 and {max_month}, exclude {year1}/{month1} you picked in the first date. ')
+
+    # Show user picked first date
+    print(f'\nSecond date to compare: {year2}/{month2}')
+
+    # Read expenses from Google Sheets document
+    all_rows = EXPENSES.get_all_values()[1:]
+
+    # Calculate total expense for both months
+    expenses_by_month = {}
+    for row in all_rows:
+        expense_date = datetime.strptime(row[2], '%Y-%m-%d')
+        year = expense_date.year
+        month = expense_date.month
+        if year == year1 and month == month1:
+            category = row[1]
+            amount = int(row[0])
+            if category in expenses_by_month:
+                expenses_by_month[category][0] += amount
+            else:
+                expenses_by_month[category] = [amount, 0]
+        elif year == year2 and month == month2:
+            category = row[1]
+            amount = int(row[0])
+            if category in expenses_by_month:
+                expenses_by_month[category][1] += amount
+            else:
+                expenses_by_month[category] = [0, amount]
+
+    # Print total expenses for both months
+    total_month1_expenses = sum([expenses_by_month[category][0] for category in expenses_by_month])
+    total_month2_expenses = sum([expenses_by_month[category][1] for category in expenses_by_month])
+
+    print(f"\nTotal expenses for {year1}/{month1}: ${total_month1_expenses}\n")
+    for category, amounts in expenses_by_month.items():
+        print(f"{category}: ${amounts[0]}")
+
+    print(f"\nTotal expenses for {year2}/{month2}: ${total_month2_expenses}\n")
+    for category, amounts in expenses_by_month.items():
+        print(f"{category}: ${amounts[1]}")
+
+    # Calculate percentage difference between the two months
+    if total_month1_expenses != 0:
+        diff = total_month2_expenses - total_month1_expenses
+        percent = abs(diff / total_month1_expenses * 100)
+        if diff > 0:
+            print(f"\nExpenses were lower in {year1}/{month1} by ${diff:} ({percent:.2f}%)")
+        elif diff < 0:
+            print(f"\nExpenses were lower in {year2}/{month2} by ${abs(diff):} ({percent:.2f}%)\n")
+        else:
+            print("\nExpenses were the same in both months")
+    else:
+        print("\nThere were no expenses in the first month.")
+
+    go_back_compare_month()
+
+def go_back_add_expense():
+    while True:
+        try:
+            choice = input('\nDo you want to go back to the main menu? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        main()
+    else:
+        add_expense()
+
+def go_back_edit_expense():
+    while True:
+        try:
+            choice = input('\nDo you want to go back to the main menu? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        main()
+    else:
+        edit_expense()
+
+def go_back_exp_year():
+    while True:
+        try:
+            choice = input('\nDo you want to go back to the main menu? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        main()
+    else:
+        year_statement()
+
+def go_back_exp_month():
+    while True:
+        try:
+            choice = input('\nDo you want to go back to the main menu? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        main()
+    else:
+        month_statement()
+
+def go_back_compare_year():
+    while True:
+        try:
+            choice = input('\nDo you want to go back to the main menu? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        main()
+    else:
+        compare_year_expenses()
+
+def go_back_compare_month():
+    while True:
+        try:
+            choice = input('\nDo you want to go back to the main menu? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        main()
+    else:
+        compare_month_expenses()
+
 def main():
-    # add_expense()
-    # edit_expense()
-    # year_statement()
-    # month_statement()
-    compare_year_expenses()
-    
+    while True:
+        print("Welcome to the Personal Expense Tracker!")
+        print("\n===== MENU ======")
+        print("\nPlease select an option:")
+        print("1. Add an expense")
+        print("2. Edit an expense")
+        print("3. View expenses by year")
+        print("4. View expenses by month")
+        print("5. Compare expenses by year")
+        print("6. Compare expenses by month")
+        print("7. Quit")
+
+        choice = input("\nEnter your choice (1-7): ")
+
+        if choice == '1':
+            add_expense()
+        elif choice == '2':
+            edit_expense()
+        elif choice == '3':
+            year_statement()
+        elif choice == '4':
+            month_statement()
+        elif choice == '5':
+            compare_year_expenses()
+        elif choice == '6':
+            compare_month_expenses()
+        elif choice == '7':
+            print('\nGoodbye!')
+            time.sleep(3)
+            print('\nExiting program...')
+            time.sleep(3)
+            sys.exit()
+        else:
+            print("Invalid choice. Please enter a number from 1 to 7.")
+
 main()
