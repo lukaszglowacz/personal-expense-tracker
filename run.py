@@ -98,6 +98,7 @@ def add_expense():
     print('\nExpense added successfully\n')
 
 
+
 def edit_expense():
     # Prompt user for year and month
     current_year = datetime.today().year
@@ -141,9 +142,24 @@ def edit_expense():
         except ValueError:
             print(f'Invalid month. Please enter a number between 1 and {max_month}. ')
             continue
-   
-edit_expense()
+    # Prompt user to choose an expense to edit
+    while True:
+        try:
+            expense_index = int(input('\nEnter the index of expense to edit: '))
+            if expense_index < 1 or expense_index > len(filtered_expenses):
+                raise ValueError()
+            break
+        except ValueError:
+            print(f'Invalid index. Please enter a number between 1 and {len(filtered_expenses)}.')
 
+    # Get the selected expense details
+    selected_expense = filtered_expenses[expense_index-1]
+
+    # Display the selected expense details
+    print('\nSelected expense details:')
+    print(f'Category: {selected_expense["Category"]}')
+    print(f'Amount: {selected_expense["Amount"]}')
+    print(f'Date: {selected_expense["Date"]}')
 
 def year_statement():
     # Prompt user for year
@@ -180,8 +196,6 @@ def year_statement():
     for category, amount in total_expenses.items():
         print(f"{category}: ${amount}")
         print('')
-
-
 
 def month_statement():
     # Prompt user for year and month
@@ -226,9 +240,6 @@ def month_statement():
     for category, amount in total_expenses.items():
         print(f"{category}: ${amount}")
         print('')
-
-
-
 
 def compare_year_expenses():
     # Prompt user for two years
@@ -281,3 +292,13 @@ def compare_year_expenses():
     else:
         print("\nOne or both of the years are not in the expenses data")
 
+
+
+def main():
+    # add_expense()
+    edit_expense()
+    # year_statement()
+    # month_statement()
+    # compare_year_expenses()
+    
+main()
