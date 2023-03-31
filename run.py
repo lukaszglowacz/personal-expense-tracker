@@ -574,6 +574,21 @@ def year_statement():
         print(f"{category}: ${amount}")
         print('')
 
+    # Ask user if they want to see statement for another year
+    while True:
+        try:
+            choice = input('\nDo you want to see another year statement? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        year_statement()
+    else:
+        return
+
 def month_statement():
     # Prompt user for year and month
     current_year = datetime.today().year
@@ -618,6 +633,21 @@ def month_statement():
         print(f"{category}: ${amount}")
         print('')
 
+    # Ask user if they want to see statement for another year
+    while True:
+        try:
+            choice = input('\nDo you want to see another year statement? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
+
+    if choice.lower() == 'y':
+        month_statement()
+    else:
+        return
+
 def compare_year_expenses():
     # Prompt user for two years
     current_year = datetime.today().year
@@ -639,7 +669,7 @@ def compare_year_expenses():
                 raise ValueError()
             break
         except ValueError:
-            print(f'Invalid year. Please enter a different number between 1900 and {current_year}')
+            print(f'Invalid year. Please enter a different number between 1900 and {current_year}, excluding {year1}')
 
     # Read expenses form Google Sheets document
     all_rows = EXPENSES.get_all_values()[1:]
@@ -669,13 +699,26 @@ def compare_year_expenses():
     else:
         print("\nOne or both of the years are not in the expenses data")
 
+    # Ask user if they want to see statement for another year
+    while True:
+        try:
+            choice = input('\nDo you want to see another year statement? (y/n) ')
+            if choice.lower() not in ['y', 'n']:
+                raise ValueError()
+            break
+        except ValueError:
+            print('Invalid choice. Please enter y (yes) or n (no).')
 
+    if choice.lower() == 'y':
+        compare_year_expenses()
+    else:
+        return
 
 def main():
     # add_expense()
-    edit_expense()
+    # edit_expense()
     # year_statement()
     # month_statement()
-    # compare_year_expenses()
+    compare_year_expenses()
     
 main()
