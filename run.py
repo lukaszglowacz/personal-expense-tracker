@@ -738,17 +738,6 @@ def compare_year_expenses():
         for category, amount in expenses_by_year_category[year2].items():
             print(f"{category}: ${amount}")
 
-        print("\nLower expenses by category:")
-        for category in expenses_by_year_category[year1]:
-            if category in expenses_by_year_category[year2]:
-                diff = expenses_by_year_category[year1][category] - expenses_by_year_category[year2][category]
-                if diff > 0:
-                    print(f"{category}: Lower in {year1} by ${diff}")
-                elif diff < 0:
-                    print(f"{category}: Lower in {year2} by ${abs(diff)}")
-            else:
-                print(f"{category}: No data for {year2}")
-
     else:
         print("\nOne or both of the years are not in the expenses data")
 
