@@ -41,6 +41,7 @@ CATEGORIES = [
     'Entertainment'
 ]
 
+
 def add_expense():
     # Display category options to the user
     print('')
@@ -100,6 +101,7 @@ def add_expense():
     print('\nExpense added successfully\n')
 
     go_back_add_expense()
+
 
 def edit_expense():
     # Prompt user for year and month
@@ -542,6 +544,7 @@ def edit_expense():
 
     go_back_edit_expense()
 
+
 def year_statement():
     # Prompt user for year
     current_year = datetime.today().year
@@ -595,6 +598,7 @@ def year_statement():
 
     go_back_exp_year()
 
+
 def month_statement():
     # Prompt user for year and month
     current_year = datetime.today().year
@@ -642,7 +646,7 @@ def month_statement():
     # Ask user if they want to see statement for another year
     while True:
         try:
-            choice = input('\nDo you want to see another year statement? (y/n) ')
+            choice = input('\nDo you want to see another statement? (y/n) ')
             if choice.lower() not in ['y', 'n']:
                 raise ValueError()
             break
@@ -654,7 +658,8 @@ def month_statement():
     else:
         return
 
-    go_back_exp_year()
+    go_back_exp_month()
+
 
 def compare_year_expenses():
     # Prompt user for two years
@@ -723,6 +728,7 @@ def compare_year_expenses():
         return
 
     go_back_compare_year()
+
 
 def compare_month_expenses():
     # Prompt user for year and month for the first date
@@ -825,6 +831,7 @@ def compare_month_expenses():
 
     go_back_compare_month()
 
+
 def go_back_add_expense():
     while True:
         try:
@@ -839,6 +846,7 @@ def go_back_add_expense():
         main()
     else:
         add_expense()
+
 
 def go_back_edit_expense():
     while True:
@@ -855,6 +863,7 @@ def go_back_edit_expense():
     else:
         edit_expense()
 
+
 def go_back_exp_year():
     while True:
         try:
@@ -869,6 +878,7 @@ def go_back_exp_year():
         main()
     else:
         year_statement()
+
 
 def go_back_exp_month():
     while True:
@@ -885,6 +895,7 @@ def go_back_exp_month():
     else:
         month_statement()
 
+
 def go_back_compare_year():
     while True:
         try:
@@ -900,6 +911,7 @@ def go_back_compare_year():
     else:
         compare_year_expenses()
 
+
 def go_back_compare_month():
     while True:
         try:
@@ -914,6 +926,7 @@ def go_back_compare_month():
         main()
     else:
         compare_month_expenses()
+
 
 def main():
     while True:
