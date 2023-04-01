@@ -673,6 +673,9 @@ def compare_year_expenses():
         except ValueError:
             print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
 
+    # Show user picked first year
+    print(f'\nFirst year to compare: {year1}')
+
     while True:
         try:
             year2 = int(input(f'Enter second year to compare (1900 - {current_year}): '))
@@ -684,33 +687,71 @@ def compare_year_expenses():
         except ValueError:
             print(f'Invalid year. Please enter a different number between 1900 and {current_year}, excluding {year1}')
 
+    # Show user picked first date
+    print(f'\nSecond year to compare: {year2}')
+
     # Read expenses form Google Sheets document
     all_rows = EXPENSES.get_all_values()[1:]
 
     # Calculate total expenses for for each year
-    expenses_by_year = {}
+    expenses_by_year_category = {}
+    total_expenses_by_year = {}
+
     for row in all_rows:
         expense_date = datetime.strptime(row[2], '%Y-%m-%d')
         year = expense_date.year
-        if year in expenses_by_year:
-            expenses_by_year[year] += int(row[0])
-        else:
-            expenses_by_year[year] = int(row[0])
+        category = row[1]
 
-    # Calculate percentage difference between the two years
-    if year1 in expenses_by_year and year2 in expenses_by_year:
-        diff = expenses_by_year[year2] - expenses_by_year[year1]
-        percent = abs(diff / expenses_by_year[year1] * 100)
-        print(f"\nTotal expenses in {year1}: ${expenses_by_year[year1]}")
-        print(f"Total expenses in {year2}: ${expenses_by_year[year2]}")
-        if diff > 0:
-            print(f"\nExpenses were lower in {year1} by ${diff:} ({percent:.2f}%)")
-        elif diff < 0:
-            print(f"\nExpenses were lower in {year2} by ${abs(diff):} ({percent:.2f}%)\n")
+        if year not in expenses_by_year_category:
+            expenses_by_year_category[year] = {}
+            total_expenses_by_year[year] = 0
+
+        if category in expenses_by_year_category[year]:
+            expenses_by_year_category[year][category] += int(row[0])
         else:
-            print("\nExpenses were the same in both years")
+            expenses_by_year_category[year][category] = int(row[0])
+
+        total_expenses_by_year[year] += int(row[0])
+
+    # Compare expenses by category by category for the two years
+    if year1 in expenses_by_year_category and year2 in expenses_by_year_category:
+        print(f"\nTotal expenses in {year1}: ${total_expenses_by_year[year1]}")
+        print(f"Total expenses in {year2}: ${total_expenses_by_year[year2]}\n")
+
+        # Calculate percentage difference between the two years
+        diff = total_expenses_by_year[year1] - total_expenses_by_year[year2]
+        percent = abs(diff / total_expenses_by_year[year1] * 100)
+        if diff > 0:
+            print(f"{year1} is lower than {year2} by {percent:.2f}%\n")
+        elif diff < 0:
+            print(f"{year2} is lower than {year1} by {percent:.2f}%\n")
+        else:
+            print("Total expenses are the same in both years\n")
+
+        # Calculate expenses in each category
+
+        print(f"\nExpenses by category in {year1}:")
+        for category, amount in expenses_by_year_category[year1].items():
+            print(f"{category}: ${amount}")
+
+        print(f"\nExpenses by category in {year2}:")
+        for category, amount in expenses_by_year_category[year2].items():
+            print(f"{category}: ${amount}")
+
+        print("\nLower expenses by category:")
+        for category in expenses_by_year_category[year1]:
+            if category in expenses_by_year_category[year2]:
+                diff = expenses_by_year_category[year1][category] - expenses_by_year_category[year2][category]
+                if diff > 0:
+                    print(f"{category}: Lower in {year1} by ${diff}")
+                elif diff < 0:
+                    print(f"{category}: Lower in {year2} by ${abs(diff)}")
+            else:
+                print(f"{category}: No data for {year2}")
+
     else:
         print("\nOne or both of the years are not in the expenses data")
+
 
     # Ask user if they want to see statement for another year
     while True:
