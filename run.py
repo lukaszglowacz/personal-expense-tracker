@@ -41,7 +41,7 @@ CATEGORIES = [
     'Entertainment'
 ]
 
-
+# Add expense function - add new expense and update it with Google Sheets document
 def add_expense():
     # Display category options to the user
     print('')
@@ -102,7 +102,7 @@ def add_expense():
 
     go_back_add_expense()
 
-
+# Edit expense function - edit expense and update it with Google Sheets document
 def edit_expense():
     # Prompt user for year and month
     current_year = datetime.today().year
@@ -544,7 +544,7 @@ def edit_expense():
 
     go_back_edit_expense()
 
-
+# Year statement function - user can see how much expenses user have in entered year with category details
 def year_statement():
     # Prompt user for year
     current_year = datetime.today().year
@@ -598,7 +598,7 @@ def year_statement():
 
     go_back_exp_year()
 
-
+# Month statement function - user can see how much expenses user have in entered month with category details
 def month_statement():
     # Prompt user for year and month
     current_year = datetime.today().year
@@ -660,7 +660,7 @@ def month_statement():
 
     go_back_exp_month()
 
-
+# Compare year expenses - user can compare two expenses year and get know in which year user spare more money
 def compare_year_expenses():
     # Prompt user for two years
     current_year = datetime.today().year
@@ -729,7 +729,7 @@ def compare_year_expenses():
 
     go_back_compare_year()
 
-
+# Compare month expenses - user can compare two expenses month and get know in which month user spare more money
 def compare_month_expenses():
     # Prompt user for year and month for the first date
     current_year = datetime.today().year
@@ -831,7 +831,7 @@ def compare_month_expenses():
 
     go_back_compare_month()
 
-
+# Function ask user if user want to go back to the menu or stays and add another expense
 def go_back_add_expense():
     while True:
         try:
@@ -847,7 +847,7 @@ def go_back_add_expense():
     else:
         add_expense()
 
-
+# Function ask user if user want to go back to the menu or stays and edit another expense
 def go_back_edit_expense():
     while True:
         try:
@@ -863,7 +863,7 @@ def go_back_edit_expense():
     else:
         edit_expense()
 
-
+# Function ask user if user want to go back to the menu or stays and see another year statement
 def go_back_exp_year():
     while True:
         try:
@@ -879,7 +879,7 @@ def go_back_exp_year():
     else:
         year_statement()
 
-
+# Function ask user if user want to go back to the menu or stays and see another month statement
 def go_back_exp_month():
     while True:
         try:
@@ -895,7 +895,7 @@ def go_back_exp_month():
     else:
         month_statement()
 
-
+# Function ask user if user want to go back to the menu or stays and compare another years
 def go_back_compare_year():
     while True:
         try:
@@ -911,7 +911,7 @@ def go_back_compare_year():
     else:
         compare_year_expenses()
 
-
+# Function ask user if user want to go back to the menu or stays and compare another months
 def go_back_compare_month():
     while True:
         try:
@@ -927,7 +927,7 @@ def go_back_compare_month():
     else:
         compare_month_expenses()
 
-
+# Main called function, where other functions are called from main menu
 def main():
     while True:
         print("Welcome to the Personal Expense Tracker!")
@@ -963,5 +963,5 @@ def main():
             sys.exit()
         else:
             print("Invalid choice. Please enter a number from 1 to 7.")
-
+# Main function which is only one function called when program starts
 main()
