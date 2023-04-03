@@ -1,28 +1,32 @@
-from datetime import datetime
-import gspread
-from google.oauth2.service_account import Credentials
-import pyfiglet
-import time
-import sys
+# Importing necessary libraries/modules
+from datetime import datetime  # for working with dates and times
+import gspread  # for interacting with Google Sheets API
+from google.oauth2.service_account import Credentials  # for authorizing access to Google Sheets API
+import pyfiglet  # for printing ASCII art
+import time  # for pausing the program execution for some time
+import sys  # for interacting with the system
 
+# Printing ASCII art banner
 ascii_banner = pyfiglet.figlet_format("Personal\nExpense\nTracker")
 print(ascii_banner)
 
-# Define the credentials
+# Define the required Google API scopes
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
     ]
 
+# Load the credentials from the JSON file and authorize access to the required scopes
 CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
-GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 
-# Authorize access to Google Sheets document
+# Authorize access to the Google Sheets document using the authorized credentials
+GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('personal-expense-tracker')
 EXPENSES = SHEET.worksheet('expenses')
-# Define expense categories
+
+# Define the expense categories
 CATEGORIES = [
     'Housing',
     'Transportation',
@@ -41,6 +45,7 @@ CATEGORIES = [
     'Entertainment'
 ]
 
+
 # Add expense function - add new expense and update it with Google Sheets document
 def add_expense():
     # Display category options to the user
@@ -48,7 +53,7 @@ def add_expense():
     print(f'{"Index":<6}{"Category":<15}')
     for i, category in enumerate(CATEGORIES):
         print(f"{i+1:<6}{category:<15}")
-    
+
     # Prompt user for category index
     while True:
         category_index_input = input(f"\nEnter the index of the new expense category (1 - {len(CATEGORIES)}): ")
@@ -66,7 +71,7 @@ def add_expense():
 
     # Get expense details
     # Get amount only with numbers and change it to integers
-    while True:  
+    while True:
         amount_input = input('\nEnter expense amount: ')
         if not amount_input:
             continue
@@ -100,7 +105,9 @@ def add_expense():
     EXPENSES.append_row(row)
     print('\nExpense added successfully\n')
 
+    # Ask user whether they want to add another expense or return to the main menu
     go_back_add_expense()
+
 
 # Edit expense function - edit expense and update it with Google Sheets document
 def edit_expense():
@@ -114,7 +121,7 @@ def edit_expense():
             break
         except ValueError:
             print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
-    
+
     while True:
         max_month = 12 if year < current_year else datetime.today().month
         try:
@@ -264,7 +271,7 @@ def edit_expense():
                         except ValueError:
                             print('Invalid amount. Please enter a valid number.')
                             continue
-        
+
                     # Update the amount for the selected expense
                     selected_expense["Amount"] = amount
                     row_index = EXPENSES.find(selected_expense["Date"]).row
@@ -293,7 +300,7 @@ def edit_expense():
                     # Update the date for the selected expense
                     selected_expense["Date"] = str(date)
                     EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
-                    print('Date updated successfully')   
+                    print('Date updated successfully')
 
             elif more_choice.lower() == 'n':
                 break
@@ -315,7 +322,7 @@ def edit_expense():
             except ValueError:
                 print('Invalid amount. Please enter a valid number.')
                 continue
-        
+
         # Update the amount for the selected expense
         selected_expense["Amount"] = amount
         row_index = EXPENSES.find(selected_expense["Date"]).row
@@ -384,7 +391,7 @@ def edit_expense():
                         except ValueError:
                             print('Invalid amount. Please enter a valid number.')
                             continue
-        
+
                     # Update the amount for the selected expense
                     selected_expense["Amount"] = amount
                     row_index = EXPENSES.find(selected_expense["Date"]).row
@@ -413,7 +420,7 @@ def edit_expense():
                     # Update the date for the selected expense
                     selected_expense["Date"] = str(date)
                     EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
-                    print('Date updated successfully')   
+                    print('Date updated successfully')
 
             elif more_choice.lower() == 'n':
                 break
@@ -443,7 +450,7 @@ def edit_expense():
         selected_expense["Date"] = str(date)
         EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
         print('Date updated successfully')
-        
+
         # Ask if user wants to edit more parameters
         while True:
             more_choice = input('\nDo you want to edit more parameters for this expense? (y/n) ')
@@ -506,7 +513,7 @@ def edit_expense():
                         except ValueError:
                             print('Invalid amount. Please enter a valid number.')
                             continue
-        
+
                     # Update the amount for the selected expense
                     selected_expense["Amount"] = amount
                     row_index = EXPENSES.find(selected_expense["Date"]).row
@@ -535,14 +542,16 @@ def edit_expense():
                     # Update the date for the selected expense
                     selected_expense["Date"] = str(date)
                     EXPENSES.update_cell(row_index, 3, selected_expense["Date"])
-                    print('Date updated successfully')   
+                    print('Date updated successfully')
 
             elif more_choice.lower() == 'n':
                 break
             else:
                 print('Invalid choice. Please enter y (yes) or n (no).')
 
+    # Ask user whether they want to edit another expense or return to the main menu
     go_back_edit_expense()
+
 
 # Year statement function - user can see how much expenses user have in entered year with category details
 def year_statement():
@@ -550,33 +559,47 @@ def year_statement():
     current_year = datetime.today().year
     while True:
         try:
+            # Ask user to input the year to see the expenses for
             year = int(input(f'\nEnter year (1900 - {current_year}): '))
+            # Validate user input - year should be between 1900 and the current year
             if year < 1900 or year > current_year:
                 raise ValueError()
             break
         except ValueError:
             print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
-    
+
     # Read expenses form Google Sheets document
+    # Retrieve all rows of expenses from the sheet, except the header row
     all_rows = EXPENSES.get_all_values()[1:]
 
     # Calculate total expenses for the chosen year
-    
     total_expenses = {}
+
+    # Iterate over all the rows in the sheet
     for row in all_rows:
+        # Parse the date of the expense from the row
         expense_date = datetime.strptime(row[2], '%Y-%m-%d')
+
+        # Check if the expense was made in the chosen year
         if expense_date.year == year:
+            # Get the category and amount of the expense from the row
             category = row[1]
             amount = int(row[0])
+
+            # Add the amount to the total for the category
             if category in total_expenses:
                 total_expenses[category] += amount
             else:
                 total_expenses[category] = amount
 
     # Print total expenses for all categories
+    # Calculate the total expenses for the chosen year by summing up the expenses in all categories
     total_year_expense = sum(total_expenses.values())
 
+    # Print the total expenses for all categories in the chosen year
     print(f"\nTotal expenses for all categories in {year}: ${total_year_expense}\n")
+
+    # Print the expenses for each category
     for category, amount in total_expenses.items():
         print(f"{category}: ${amount}")
         print('')
@@ -592,11 +615,15 @@ def year_statement():
             print('Invalid choice. Please enter y (yes) or n (no).')
 
     if choice.lower() == 'y':
+        # If the user wants to see the expenses for another year, call the function recursively
         year_statement()
     else:
+        # Otherwise, return to the previous menu
         return
 
+    # Ask user whether they want to see another year statement or return to the main menu
     go_back_exp_year()
+
 
 # Month statement function - user can see how much expenses user have in entered month with category details
 def month_statement():
@@ -604,17 +631,26 @@ def month_statement():
     current_year = datetime.today().year
     while True:
         try:
+            # Ask user to input the year to see the expenses for
             year = int(input(f'\nEnter year (1900 - {current_year}): '))
+
+            # Validate user input - year should be between 1900 and the current year
             if year < 1900 or year > current_year:
                 raise ValueError()
             break
         except ValueError:
             print(f'Invalid year. Please enter a number between 1900 and {current_year} ')
-    
+
+    # Determine the maximum month to allow user to choose, based on the year
+    # If the year is less than the current year, allow the user to choose any month
+    # If the year is the current year, allow the user to choose only up to the current month
     max_month = 12 if year < current_year else datetime.today().month
     while True:
         try:
+            # Ask user to input the month to see the expenses for
             month = int(input(f'\nEnter month: (1 - {max_month}) '))
+
+            # Validate user input - month should be between 1 and the maximum allowed month
             if month < 1 or month > max_month:
                 raise ValueError()
             break
@@ -622,23 +658,37 @@ def month_statement():
             print(f'Invalid month. Please enter a number between 1 and {max_month}. ')
 
     # Read expenses from Google Sheets document
+    # Retrieve all rows of expenses from the sheet, except the header row
     all_rows = EXPENSES.get_all_values()[1:]
 
     # Calculate total expenses for all categories in the chosen month and year
     total_expenses = {}
+
+    # Iterate over all the rows in the sheet
     for row in all_rows:
+        # Parse the date of the expense from the row
         expense_date = datetime.strptime(row[2], '%Y-%m-%d')
+
+        # Check if the expense was made in the chosen month and year
         if expense_date.year == year and expense_date.month == month:
+            # Get the category and amount of the expense from the row
             category = row[1]
             amount = int(row[0])
+
+            # Add the amount to the total for the category
             if category in total_expenses:
                 total_expenses[category] += amount
             else:
                 total_expenses[category] = amount
 
     # Print total expenses for all categories
+    # Calculate the total expenses for the chosen month and year by summing up the expenses in all categories
     total_month_expense = sum(total_expenses.values())
+
+    # Print the total expenses for all categories in the chosen month and year
     print(f"\nTotal expenses for all categories in {month}/{year}: ${total_month_expense}\n")
+
+    # Print the expenses for each category
     for category, amount in total_expenses.items():
         print(f"{category}: ${amount}")
         print('')
@@ -647,18 +697,23 @@ def month_statement():
     while True:
         try:
             choice = input('\nDo you want to see another statement? (y/n) ')
+
+            # Validate user input - choice should be 'y' (yes) or 'n' (no)
             if choice.lower() not in ['y', 'n']:
                 raise ValueError()
             break
         except ValueError:
             print('Invalid choice. Please enter y (yes) or n (no).')
 
+    # If the user chose 'y', call the corresponding function to show the statement for another year or month
     if choice.lower() == 'y':
         month_statement()
     else:
         return
 
+    # Ask user whether they want to see another month statement or return to the main menu
     go_back_exp_month()
+
 
 # Compare year expenses - user can compare two expenses year and get know in which year user spare more money
 def compare_year_expenses():
@@ -666,7 +721,10 @@ def compare_year_expenses():
     current_year = datetime.today().year
     while True:
         try:
+            # Ask the user to input the first year to compare expenses for
             year1 = int(input(f'\nEnter first year to compare (1900 - {current_year}): '))
+
+            # Validate user input - year should be between 1900 and the current year
             if year1 < 1900 or year1 > current_year:
                 raise ValueError()
             break
@@ -678,7 +736,10 @@ def compare_year_expenses():
 
     while True:
         try:
+            # Ask the user to input the second year to compare expenses for
             year2 = int(input(f'Enter second year to compare (1900 - {current_year}): '))
+
+            # Validate user input - year should be between 1900 and the current year and should not be the same as the first year
             if year2 < 1900 or year2 > current_year:
                 raise ValueError()
             if year2 == year1:
@@ -693,19 +754,23 @@ def compare_year_expenses():
     # Read expenses form Google Sheets document
     all_rows = EXPENSES.get_all_values()[1:]
 
-    # Calculate total expenses for for each year
+    # Calculate total expenses for for each year and for each category
     expenses_by_year_category = {}
     total_expenses_by_year = {}
 
+    # Iterate over all the rows in the sheet
     for row in all_rows:
+        # Parse the date of the expense from the row
         expense_date = datetime.strptime(row[2], '%Y-%m-%d')
         year = expense_date.year
         category = row[1]
 
+        # Add the year to the expenses_by_year_category and total_expenses_by_year dictionaries if it doesn't already exist
         if year not in expenses_by_year_category:
             expenses_by_year_category[year] = {}
             total_expenses_by_year[year] = 0
 
+        # Add the amount of the expense to the total for the year and the category
         if category in expenses_by_year_category[year]:
             expenses_by_year_category[year][category] += int(row[0])
         else:
@@ -715,12 +780,15 @@ def compare_year_expenses():
 
     # Compare expenses by category by category for the two years
     if year1 in expenses_by_year_category and year2 in expenses_by_year_category:
+        # Print the total expenses for each of the two years
         print(f"\nTotal expenses in {year1}: ${total_expenses_by_year[year1]}")
         print(f"Total expenses in {year2}: ${total_expenses_by_year[year2]}\n")
 
         # Calculate percentage difference between the two years
         diff = total_expenses_by_year[year1] - total_expenses_by_year[year2]
         percent = abs(diff / total_expenses_by_year[year1] * 100)
+
+        # Print the percentage difference between the two years
         if diff > 0:
             print(f"{year1} is lower than {year2} by {percent:.2f}%\n")
         elif diff < 0:
@@ -728,8 +796,7 @@ def compare_year_expenses():
         else:
             print("Total expenses are the same in both years\n")
 
-        # Calculate expenses in each category
-
+        # Print expenses in each category for each year
         print(f"\nExpenses by category in {year1}:")
         for category, amount in expenses_by_year_category[year1].items():
             print(f"{category}: ${amount}")
@@ -741,7 +808,6 @@ def compare_year_expenses():
     else:
         print("\nOne or both of the years are not in the expenses data")
 
-
     # Ask user if they want to see statement for another year
     while True:
         try:
@@ -751,13 +817,16 @@ def compare_year_expenses():
             break
         except ValueError:
             print('Invalid choice. Please enter y (yes) or n (no).')
-
+    
+    # Recurse if the user wants to see another year's statement, else return to the main menu
     if choice.lower() == 'y':
         compare_year_expenses()
     else:
         return
 
+    # Ask user whether they want to compare another years or return to the main menu
     go_back_compare_year()
+
 
 # Compare month expenses - user can compare two expenses month and get know in which month user spare more money
 def compare_month_expenses():
@@ -858,8 +927,10 @@ def compare_month_expenses():
             print("\nExpenses were the same in both months")
     else:
         print("\nThere were no expenses in the first month.")
-
+    
+    # Ask user whether they want to compare another months or return to the main menu
     go_back_compare_month()
+
 
 # Function ask user if user want to go back to the menu or stays and add another expense
 def go_back_add_expense():
@@ -876,6 +947,7 @@ def go_back_add_expense():
         main()
     else:
         add_expense()
+
 
 # Function ask user if user want to go back to the menu or stays and edit another expense
 def go_back_edit_expense():
@@ -973,6 +1045,7 @@ def main():
 
         choice = input("\nEnter your choice (1-7): ")
 
+        # Calls the appropriate function based on the user's choice
         if choice == '1':
             add_expense()
         elif choice == '2':
@@ -993,5 +1066,6 @@ def main():
             sys.exit()
         else:
             print("Invalid choice. Please enter a number from 1 to 7.")
+
 # Main function which is only one function called when program starts
 main()
