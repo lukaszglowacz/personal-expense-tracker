@@ -2,7 +2,10 @@
 
 Personal Expense Tracker is an app to manage your expenses - the application stores data in Google Sheets documents. Users can add new costs based on 15 different expense categories, edit existing payments and do some statistics based on existing statistics, like see the year on a monthly statement or compare two years or two monthly reports.
 
-[Here is the live version of my project](https://expense-tracker-app.herokuapp.com/)
+## 🚀 Live Version
+
+You can try the app here:  
+👉 [Live Personal Expense Tracker](https://personal-expense-tracker-2e927bc5881b.herokuapp.com/)
 
 ![live_version](https://user-images.githubusercontent.com/119242394/229491565-58a0ef95-6435-460d-ad10-1bd9241d302c.png)
 
@@ -93,14 +96,96 @@ I have manually tested this project by doing the following:
 ![python_test](https://user-images.githubusercontent.com/119242394/229908393-891ebc80-681c-45e3-a6fe-fe40af5443ac.png)
 
 ## Deployment
-The project was deployed using Heroku.
 
-- Steps for deployment:
-  - Fork or clone this repository
-  - Create a new Heroku app
-  - Set the buildpacks to Python and NodeJS in that order
-  - Link the Heroku app to the repository
-  - Click on Deploy
+The project is deployed using **Heroku**.
+
+### Steps for Deployment
+
+1. **Fork or clone this repository**
+   
+```bash
+https://github.com/lukaszglowacz/personal-expense-tracker.git
+```
+   
+2. **Create a new Heroku app**
+
+```bash
+heroku create your-app-name
+```
+
+3. **Set Heroku buildpacks (in this exact order!)**
+   
+- heroku/python
+- heroku/nodejs
+
+Configure via dashboard or CLI:
+
+```bash
+heroku buildpacks:set heroku/python
+heroku buildpacks:add heroku/nodejs
+```
+
+4. **Enable Google Sheets integration (required for the app to work)**
+
+### Google Sheets API Setup
+To allow your app to read/write expenses into Google Sheets, you must configure Google Cloud:
+
+1. **Go to Google Cloud Console**
+
+```bash
+https://console.cloud.google.com
+```
+
+2. **Create a new project**
+   
+3. **Enable APIs:**
+   - Google Sheets API
+   - Google Drive API
+     
+4. **Go to IAM & Admin → Service Accounts**
+   
+5. **Create a Service Account**
+   
+6. **Generate a JSON key and download it**
+    
+7. Share your Google Sheets file with the Service Account email
+    
+Example format:
+
+```bash
+expense-tracker-service@your-project-id.iam.gserviceaccount.com
+```
+
+Set permission: **Editor**
+
+8. **Open the JSON file and copy its entire contents**
+
+### Heroku Config Vars
+
+In Heroku → Settings → Config Vars, add:
+
+```bash
+CREDS_JSON = { ...full JSON from your service account... }
+```
+
+This allows Google Sheets authentication to work correctly on Heroku.
+
+1. **Connect Heroku to GitHub**
+   In Heroku → Deploy → GitHub, connect your repository.
+   
+2. **Deploy the app**
+   
+   Click Deploy Branch or enable Automatic Deploys.
+   
+3. **Open the app**
+
+
+
+
+
+
+
+   
 
 ## Credits
 - [localfirstbank.com](https://localfirstbank.com/article/budgeting-101-personal-budget-categories/)
