@@ -1,20 +1,21 @@
 {
-  "name": "terminal",
+  "name": "personal-expense-tracker",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "test": "echo \"No tests defined\" && exit 0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lechien73/terminal.git"
+    "url": "https://github.com/lukaszglowacz/personal-expense-tracker"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Lukasz Glowacz",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lechien73/terminal/issues"
+    "url": "https://github.com/lukaszglowacz/personal-expense-tracker/issues"
   },
-  "homepage": "https://github.com/lechien73/terminal#readme",
+  "homepage": "https://github.com/lukaszglowacz/personal-expense-tracker#readme",
   "dependencies": {
     "node-static": "^0.7.11",
     "node-pty": "^0.10.1",
