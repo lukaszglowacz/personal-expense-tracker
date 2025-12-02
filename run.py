@@ -6,6 +6,8 @@ from google.oauth2.service_account import Credentials  # for\
 import pyfiglet  # for printing ASCII art
 import time  # for pausing the program execution for some time
 import sys  # for interacting with the system
+import os
+import json
 
 # Printing ASCII art banner
 ascii_banner = pyfiglet.figlet_format("Personal\nExpense\nTracker")
@@ -20,7 +22,13 @@ SCOPE = [
 
 # Load the credentials from the JSON file and authorize access
 # to the required scopes
-CREDS = Credentials.from_service_account_file('creds.json')
+if "GOOGLE_CREDS_JSON" in os.environ:
+    # ✅ Production / Heroku – creds from Config Var
+    service_account_info = json.loads(os.environ["GOOGLE_CREDS_JSON"])
+    CREDS = Credentials.from_service_account_info(service_account_info)
+else:
+    # ✅ Local development – fallback to creds.json file
+    CREDS = Credentials.from_service_account_file("creds.json")
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 
 # Authorize access to the Google Sheets document
